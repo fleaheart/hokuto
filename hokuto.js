@@ -4,6 +4,8 @@ var Hokuto;
     let m_saikoro_display;
     let m_game_screen;
     let m_mode = 0;
+    let m_bonus_count = 0;
+    let m_gameover = false;
     let m_saikoro_max = 0;
     let m_saikoro_value = 0;
     window.addEventListener('load', () => {
@@ -25,6 +27,14 @@ var Hokuto;
     function add_message(message) {
         m_game_screen.appendChild(document.createTextNode(message));
         m_game_screen.appendChild(document.createElement('br'));
+        setTimeout(scroll_message, 40);
+    }
+    function scroll_message() {
+        let y = m_game_screen.scrollTop;
+        m_game_screen.scrollBy(0, 10);
+        if (y < m_game_screen.scrollTop) {
+            setTimeout(scroll_message, 40);
+        }
     }
     function start_saikoro(saikoro_max) {
         m_saikoro_max = saikoro_max;
@@ -41,19 +51,37 @@ var Hokuto;
         m_saikoro_display.textContent = String(m_saikoro_value);
         window.setTimeout(kaiten_saikoro, 100);
     }
+    let m_enshutsu_stack = [];
     function nextStep() {
+        if (0 < m_enshutsu_stack.length) {
+            let msg = m_enshutsu_stack.shift() || '';
+            add_message(msg);
+            if (m_enshutsu_stack.length <= 0) {
+                if (7 <= m_mode && m_mode <= 10) {
+                    start_saikoro(2048);
+                }
+            }
+            return;
+        }
+        if (m_gameover) {
+            return;
+        }
         stop_saikoro();
         let value = m_saikoro_value;
-        add_message('サイコロは:' + value);
+        if (4 <= m_mode && m_mode <= 10) {
+            add_message('サイコロは:' + value);
+        }
         if (m_mode == 4) {
+            m_enshutsu_stack.push('bonus kakutei');
             m_mode = choiceValue([0, 0, 0, 0, 0, 2000, 48], value);
+            m_bonus_count = 0;
         }
         else if (m_mode == 5) {
-            add_message('７');
+            m_enshutsu_stack.push('７');
             m_mode = choiceValue([0, 0, 0, 0, 0, 0, 0, 1184, 800, 40, 24], value);
         }
         else if (m_mode == 6) {
-            add_message('北');
+            m_enshutsu_stack.push('北');
             m_mode = choiceValue([0, 0, 0, 0, 0, 0, 0, 1, 1, 1246, 800], value);
         }
         else if (m_mode == 7) {
@@ -68,15 +96,35 @@ var Hokuto;
         else if (m_mode == 10) {
             m_mode = choiceValue([220, 0, 0, 0, 8, 16, 4, 0, 0, 0, 1800], value);
         }
-        if (4 <= m_mode && m_mode <= 10) {
+        if (4 <= m_mode && m_mode <= 6) {
             start_saikoro(2048);
         }
-        add_message('次のモードは:' + m_mode);
+        else if (7 <= m_mode && m_mode <= 10) {
+            m_bonus_count++;
+            m_enshutsu_stack.push('コン');
+            m_enshutsu_stack.push('パンチ');
+            m_enshutsu_stack.push('ガード');
+            m_enshutsu_stack.push('そんなやわな拳では、この体に傷ひとつつける事はできぬわ!');
+            m_enshutsu_stack.push('BONUS +1 ピキン!ドゴーン!');
+        }
+        else {
+            m_enshutsu_stack.push('リオウ');
+            m_enshutsu_stack.push('パンチ');
+            m_enshutsu_stack.push('ドガッ');
+            m_enshutsu_stack.push('うぬの力はその程度か。');
+            m_enshutsu_stack.push('ウッ');
+            m_enshutsu_stack.push('BONUS ' + m_bonus_count + ' 終');
+            m_enshutsu_stack.push('バシーン');
+            m_gameover = true;
+        }
     }
     function choiceValue(kakutable, shikou) {
         let zentai = 0;
         for (let i = 0; i < kakutable.length; i++) {
             zentai += kakutable[i];
+        }
+        if (shikou == undefined) {
+            shikou = Math.floor(Math.random() * zentai);
         }
         let hikaku = 0;
         for (let i = 0; i < kakutable.length; i++) {
