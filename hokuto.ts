@@ -95,6 +95,84 @@ namespace Hokuto {
         window.setTimeout(kaiten_saikoro, 100);
     }
 
+    let next_mode_table: number[][] = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 2000, 500, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 1000, 800, 150, 50],
+        [0, 0, 0, 0, 0, 0, 0, 1, 1, 1198, 800],
+        [580, 0, 0, 0, 4, 8, 8, 1400, 0, 0, 0],
+        [380, 0, 0, 0, 4, 8, 8, 0, 1600, 0, 0],
+        [368, 0, 0, 0, 8, 16, 8, 0, 0, 1700, 0],
+        [168, 0, 0, 0, 8, 16, 8, 0, 0, 0, 1800]
+    ];
+
+    let aura_table: number[][] = [
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [30000, 15000, 8000, 2000, 500, 250],
+        [22016, 15000, 15000, 8000, 2000, 500],
+        [1000, 10000, 15000, 15000, 8000, 2000],
+        [5000, 5000, 5000, 15000, 15000, 15000]
+    ];
+
+    let enshutsu_win_table: number[][] = [
+        [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+        [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+        [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+        [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
+    ];
+
+    let enshutsu_win_message_table: string[][] = [
+        ['コン', 'パンチ', 'ガード', 'そんなやわな拳では、痛くもないわ!'],
+        ['コン', 'パンチ', 'ヒット', '油断したわ　コンシロウ'],
+        ['コン', 'キック', 'ガード', 'そんなやわな拳では、痛くもないわ!'],
+        ['コン', 'キック', 'ヒット', '油断したわ　コンシロウ'],
+        ['コン', '千年波', 'ガード', 'そんなやわな拳では、痛くもないわ!'],
+        ['コン', '千年波', 'ヒット', '油断したわ　コンシロウ'],
+        ['コン', 'ルイ', 'ビヨーーン', 'ヒット', 'こ･･･これはルイの拳!', '油断したわ　コンシロウ'],
+        ['リオウ', 'パンチ', 'サッ', 'リオウよ、お帰りの時間が来たのだ!!'],
+        ['リオウ', 'パンチ', 'タキ<br>サッ', 'こ･･･この動きは･･･タ･･･タキ!', 'リオウよ、お帰りの時間が来たのだ!!'],
+        ['リオウ', 'パンチ', 'ドガッ', '貴様のチカラはその程度か。', 'ハッ', 'ウオォォォォ!'],
+        ['リオウ', 'パンチ', 'ドガッ', '貴様のチカラはその程度か。', 'ぐはっ', 'BONUS count 終', 'コーン!', 'ウオォォォォ!'],
+        ['リオウ', 'パンチ', 'ドガッ', '貴様のチカラはその程度か。', 'ぐはっ', 'BONUS count 終', 'コン!', 'ウオォォォォ!'],
+        ['リオウ', 'キック', 'サッ', 'リオウよ、お帰りの時間が来たのだ!!'],
+        ['リオウ', 'キック', 'タキ<br>サッ', 'こ･･･この動きは･･･タ･･･タキ!', 'リオウよ、お帰りの時間が来たのだ!!'],
+        ['リオウ', 'キック', 'ドガッ', '貴様のチカラはその程度か。', 'ハッ', 'ウオォォォォ!'],
+        ['リオウ', 'キック', 'ドガッ', '貴様のチカラはその程度か。', 'ぐはっ', 'BONUS count 終', 'コーン!', 'ウオォォォォ!'],
+        ['リオウ', 'キック', 'ドガッ', '貴様のチカラはその程度か。', 'ぐはっ', 'BONUS count 終', 'コン!', 'ウオォォォォ!'],
+        ['リオウ', '掌底拳', 'サッ', 'リオウよ、お帰りの時間が来たのだ!!'],
+        ['リオウ', '掌底拳', 'タキ<br>サッ', 'こ･･･この動きは･･･タ･･･タキ!', 'リオウよ、お帰りの時間が来たのだ!!'],
+        ['リオウ', '掌底拳', 'ボワーーー', '貴様のチカラはその程度か。', 'ハッ', 'ウオォォォォ!'],
+        ['リオウ', '掌底拳', 'ボワーーー', '貴様のチカラはその程度か。', 'ぐはっ', 'BONUS count 終', 'コーン!', 'ウオォォォォ!'],
+        ['リオウ', '掌底拳', 'ボワーーー', '貴様のチカラはその程度か。', 'ぐはっ', 'BONUS count 終', 'コン!', 'ウオォォォォ!']
+    ];
+
+    let enshutsu_lose_table: number[] = [5000, 20000, 40000];
+
+    let enshutsu_lose_message_table: string[][] = [
+        ['リオウ', 'パンチ', 'ドガッ', '貴様のチカラはその程度か。', 'ぐはっ'],
+        ['リオウ', 'キック', 'ドガッ', '貴様のチカラはその程度か。', 'ぐはっ'],
+        ['リオウ', '掌底拳', 'ボワーーー', '貴様のチカラはその程度か。', 'ぐはっ'],
+    ];
+
+    let enshutsu_ending_message_list: string[] = [
+        '次の一撃が最後となるだろう',
+        'やられろ　コンシロウ!!<br>ウォーター',
+        'ば･･･ばかな･･･!!',
+        'このリオウ家に帰るのに親の手は借りぬ!!<br>我生涯に少々の迷いなし!!',
+        'リオウよ　俺には貴方が最高の強敵だった'
+    ];
+
+    let aura_color_table = ['白', '黒', '赤', '青', '黄', '緑'];
+
     function nextStep() {
         if (0 < m_message_stack.length) {
             let message = m_message_stack.shift() || '';
@@ -103,7 +181,8 @@ namespace Hokuto {
 
             if (m_message_stack.length <= 0) {
                 if (4 <= m_mode && m_mode <= 10) {
-                    start_saikoro(2048);
+                    let saikoro_max = sumArray(next_mode_table[m_mode]);
+                    start_saikoro(saikoro_max);
                 }
             }
 
@@ -115,95 +194,103 @@ namespace Hokuto {
         }
 
         stop_saikoro();
-
         let value = m_saikoro_value;
 
         if (m_mode == 4) {
-
-            add_message('bonus kakutei');
-
-            m_mode = choiceValue([0, 0, 0, 0, 0, 2000, 48], value);
-
+            add_message('BONUS 確定');
             m_bonus_count = 0;
 
-        } else if (m_mode == 5) {
-            add_message('７');
+            m_mode = choiceValue(next_mode_table[m_mode], value);
 
-            m_mode = choiceValue([0, 0, 0, 0, 0, 0, 0, 1184, 800, 40, 24], value);
+            let saikoro_max = sumArray(next_mode_table[m_mode]);
+            start_saikoro(saikoro_max);
 
-        } else if (m_mode == 6) {
-            add_message('北');
+        } else if (5 <= m_mode && m_mode <= 6) {
+            if (m_mode == 5) {
+                add_message('７');
 
-            m_mode = choiceValue([0, 0, 0, 0, 0, 0, 0, 1, 1, 1246, 800], value);
+                m_mode = choiceValue(next_mode_table[m_mode], value);
 
-        } else if (m_mode == 7) {
+            } else if (m_mode == 6) {
+                add_message('北');
 
-            m_mode = choiceValue([632, 0, 0, 0, 4, 8, 4, 1400, 0, 0, 0], value);
+                m_mode = choiceValue(next_mode_table[m_mode], value);
 
-        } else if (m_mode == 8) {
+            }
 
-            m_mode = choiceValue([432, 0, 0, 0, 4, 8, 4, 0, 1600, 0, 0], value);
+            let aura_level = choiceValue(aura_table[m_mode]);
+            let aura_color = aura_color_table[aura_level];
 
-        } else if (m_mode == 9) {
-
-            m_mode = choiceValue([300, 0, 0, 0, 8, 16, 4, 0, 0, 1700, 0], value);
-
-        } else if (m_mode == 10) {
-
-            m_mode = choiceValue([220, 0, 0, 0, 8, 16, 4, 0, 0, 0, 1800], value);
-
-        }
-
-        if (4 <= m_mode && m_mode <= 6) {
-            start_saikoro(2048);
+            m_message_stack.push('BATTLE BONUS ゲット【' + aura_color + '】<span style="color:white">' + m_mode + '</span>');
 
         } else if (7 <= m_mode && m_mode <= 10) {
             m_bonus_count++;
             add_message('アタ、アタ、ホワァッター<br>ウェーヘッヘー');
 
+            m_mode = choiceValue(next_mode_table[m_mode], value);
+
             let yuwassha = '';
-            if (!m_yuwasshaed && 10 <= m_bonus_count) {
-                if (choiceValue([100, 100, 100]) == 0) {
-                    yuwassha = 'ユワッシャー<br>';
-                    m_yuwasshaed = true;
+            if (7 <= m_mode && m_mode <= 10) {
+                if (!m_yuwasshaed && 10 <= m_bonus_count) {
+                    if (choiceValue([100, 100, 100]) == 0) {
+                        yuwassha = 'ユワッシャー<br>';
+                        m_yuwasshaed = true;
+                    }
                 }
             }
             m_message_stack.push(yuwassha + 'BONUS ' + m_bonus_count);
 
-            m_message_stack.push('コン');
-            m_message_stack.push('パンチ');
-            m_message_stack.push('ガード');
-            m_message_stack.push('そんなやわな拳では、この体に傷ひとつつける事はできぬわ!');
+            if (7 <= m_mode && m_mode <= 10) {
+                let enshutsu_number = choiceValue(enshutsu_win_table[m_mode - 7]);
+                let enshutsu_message_list = enshutsu_win_message_table[enshutsu_number];
 
-            m_message_stack.push('BONUS +1 ピキン!ドゴーン!');
+                for (let i = 0, len = enshutsu_message_list.length; i < len; i++) {
+                    let message = enshutsu_message_list[i];
+                    if (message == 'BONUS count 終') {
+                        m_message_stack.push('BONUS ' + m_bonus_count + ' 終');
 
-        } else {
-            m_bonus_count++;
-            add_message('アタ、アタ、ホワァッター<br>ウェーヘッヘー');
+                    } else {
+                        m_message_stack.push(message);
+                    }
+                }
 
-            m_message_stack.push('BONUS ' + m_bonus_count);
+                m_message_stack.push('BONUS +1 ピキン!ドゴーン!');
 
-            m_message_stack.push('リオウ');
-            m_message_stack.push('パンチ');
-            m_message_stack.push('ドガッ');
-            m_message_stack.push('うぬの力はその程度か。');
-            m_message_stack.push('ウッ');
+            } else {
+                let enshutsu_number = choiceValue(enshutsu_lose_table);
+                let enshutsu_message_list: string[];
 
-            m_message_stack.push('BONUS ' + m_bonus_count + ' 終');
-            m_message_stack.push('バシーン');
+                if (20 <= m_bonus_count) {
+                    enshutsu_message_list = enshutsu_ending_message_list;
+                } else {
+                    enshutsu_message_list = enshutsu_lose_message_table[enshutsu_number];
+                }
 
-            m_gameover = true;
+                for (let i = 0, len = enshutsu_message_list.length; i < len; i++) {
+                    let message = enshutsu_message_list[i];
+                    m_message_stack.push(message);
+                }
+
+                m_message_stack.push('BONUS ' + m_bonus_count + ' 終');
+                m_message_stack.push('バシーン');
+
+                m_gameover = !(4 <= m_mode && m_mode <= 6);
+            }
+        }
+    }
+
+    function sumArray(numberArray: number[]): number {
+        let sum = 0;
+        for (let i = 0; i < numberArray.length; i++) {
+            sum += numberArray[i];
         }
 
+        return sum;
     }
 
     function choiceValue(kakutable: number[], shikou?: number): number {
-        let zentai = 0;
-        for (let i = 0; i < kakutable.length; i++) {
-            zentai += kakutable[i];
-        }
-
         if (shikou == undefined) {
+            let zentai = sumArray(kakutable);
             shikou = Math.floor(Math.random() * zentai);
         }
 
