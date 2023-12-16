@@ -3,8 +3,10 @@ var Hokuto;
 (function (Hokuto) {
     let m_saikoro_display;
     let m_game_screen;
+    let m_message_stack = [];
     let m_mode = 0;
     let m_bonus_count = 0;
+    let m_yuwasshaed = false;
     let m_gameover = false;
     let m_saikoro_max = 0;
     let m_saikoro_value = 0;
@@ -17,16 +19,33 @@ var Hokuto;
         if (game_screen != null) {
             m_game_screen = game_screen;
         }
-        let element = document.getElementById('next_button');
-        if (element != null) {
-            element.addEventListener('click', nextStep);
+        let next_button = document.getElementById('next_button');
+        if (next_button != null) {
+            next_button.addEventListener('click', nextStep);
         }
-        m_mode = 4;
-        start_saikoro(2048);
+        let reset_button = document.getElementById('reset_button');
+        if (reset_button != null) {
+            reset_button.addEventListener('click', reset);
+        }
+        reset();
     });
+    function reset() {
+        m_mode = 4;
+        m_bonus_count = 0;
+        m_yuwasshaed = false;
+        m_gameover = false;
+        m_saikoro_max = 0;
+        m_saikoro_value = 0;
+        m_saikoro_display.textContent = '';
+        m_game_screen.textContent = '';
+        m_message_stack.length = 0;
+        m_message_stack.push('スタート');
+        nextStep();
+    }
     function add_message(message) {
-        m_game_screen.appendChild(document.createTextNode(message));
-        m_game_screen.appendChild(document.createElement('br'));
+        let element = document.createElement('div');
+        element.innerHTML = message;
+        m_game_screen.appendChild(element);
         setTimeout(scroll_message, 40);
     }
     function scroll_message() {
@@ -51,13 +70,12 @@ var Hokuto;
         m_saikoro_display.textContent = String(m_saikoro_value);
         window.setTimeout(kaiten_saikoro, 100);
     }
-    let m_enshutsu_stack = [];
     function nextStep() {
-        if (0 < m_enshutsu_stack.length) {
-            let msg = m_enshutsu_stack.shift() || '';
-            add_message(msg);
-            if (m_enshutsu_stack.length <= 0) {
-                if (7 <= m_mode && m_mode <= 10) {
+        if (0 < m_message_stack.length) {
+            let message = m_message_stack.shift() || '';
+            add_message(message);
+            if (m_message_stack.length <= 0) {
+                if (4 <= m_mode && m_mode <= 10) {
                     start_saikoro(2048);
                 }
             }
@@ -68,20 +86,17 @@ var Hokuto;
         }
         stop_saikoro();
         let value = m_saikoro_value;
-        if (4 <= m_mode && m_mode <= 10) {
-            add_message('サイコロは:' + value);
-        }
         if (m_mode == 4) {
-            m_enshutsu_stack.push('bonus kakutei');
+            add_message('bonus kakutei');
             m_mode = choiceValue([0, 0, 0, 0, 0, 2000, 48], value);
             m_bonus_count = 0;
         }
         else if (m_mode == 5) {
-            m_enshutsu_stack.push('７');
+            add_message('７');
             m_mode = choiceValue([0, 0, 0, 0, 0, 0, 0, 1184, 800, 40, 24], value);
         }
         else if (m_mode == 6) {
-            m_enshutsu_stack.push('北');
+            add_message('北');
             m_mode = choiceValue([0, 0, 0, 0, 0, 0, 0, 1, 1, 1246, 800], value);
         }
         else if (m_mode == 7) {
@@ -101,20 +116,32 @@ var Hokuto;
         }
         else if (7 <= m_mode && m_mode <= 10) {
             m_bonus_count++;
-            m_enshutsu_stack.push('コン');
-            m_enshutsu_stack.push('パンチ');
-            m_enshutsu_stack.push('ガード');
-            m_enshutsu_stack.push('そんなやわな拳では、この体に傷ひとつつける事はできぬわ!');
-            m_enshutsu_stack.push('BONUS +1 ピキン!ドゴーン!');
+            add_message('アタ、アタ、ホワァッター<br>ウェーヘッヘー');
+            let yuwassha = '';
+            if (!m_yuwasshaed && 10 <= m_bonus_count) {
+                if (choiceValue([100, 100, 100]) == 0) {
+                    yuwassha = 'ユワッシャー<br>';
+                    m_yuwasshaed = true;
+                }
+            }
+            m_message_stack.push(yuwassha + 'BONUS ' + m_bonus_count);
+            m_message_stack.push('コン');
+            m_message_stack.push('パンチ');
+            m_message_stack.push('ガード');
+            m_message_stack.push('そんなやわな拳では、この体に傷ひとつつける事はできぬわ!');
+            m_message_stack.push('BONUS +1 ピキン!ドゴーン!');
         }
         else {
-            m_enshutsu_stack.push('リオウ');
-            m_enshutsu_stack.push('パンチ');
-            m_enshutsu_stack.push('ドガッ');
-            m_enshutsu_stack.push('うぬの力はその程度か。');
-            m_enshutsu_stack.push('ウッ');
-            m_enshutsu_stack.push('BONUS ' + m_bonus_count + ' 終');
-            m_enshutsu_stack.push('バシーン');
+            m_bonus_count++;
+            add_message('アタ、アタ、ホワァッター<br>ウェーヘッヘー');
+            m_message_stack.push('BONUS ' + m_bonus_count);
+            m_message_stack.push('リオウ');
+            m_message_stack.push('パンチ');
+            m_message_stack.push('ドガッ');
+            m_message_stack.push('うぬの力はその程度か。');
+            m_message_stack.push('ウッ');
+            m_message_stack.push('BONUS ' + m_bonus_count + ' 終');
+            m_message_stack.push('バシーン');
             m_gameover = true;
         }
     }
