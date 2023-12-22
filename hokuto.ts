@@ -34,8 +34,36 @@ namespace Hokuto {
             reset_button.addEventListener('click', reset);
         }
 
-        reset();
+        let method = 'GET';
+        let url = 'data.txt';
+        let async = true;
+        let data = '';
+
+        let xhr: XMLHttpRequest = new XMLHttpRequest();
+        xhr.abort();
+
+        xhr.open(method, url, async);
+        xhr.setRequestHeader("If-Modified-Since", "Thu, 01 Jun 1970 00:00:00 GMT");
+
+        xhr.addEventListener('readystatechange', (): void => {
+            if (xhr.readyState == 4) {
+                init(xhr.responseText);
+            }
+        });
+
+        xhr.send(data);
     });
+
+    function init(code: string) {
+        try {
+            eval(code);
+
+        } catch {
+
+        }
+
+        reset();
+    }
 
     function reset() {
         m_mode = 4;
@@ -130,6 +158,8 @@ namespace Hokuto {
         [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
     ];
 
+    let aura_color_table = ['白', '黒', '赤', '青', '黄', '緑'];
+
     let enshutsu_win_message_table: string[][] = [
         ['コン', 'パンチ', 'ガード', 'そんなやわな拳では、痛くもないわ!'],
         ['コン', 'パンチ', 'ヒット', '油断したわ　コンシロウ'],
@@ -170,8 +200,6 @@ namespace Hokuto {
         'このリオウ家に帰るのに親の手は借りぬ!!<br>我生涯に少々の迷いなし!!',
         'リオウよ　俺には貴方が最高の強敵だった'
     ];
-
-    let aura_color_table = ['白', '黒', '赤', '青', '黄', '緑'];
 
     function nextStep() {
         if (0 < m_message_stack.length) {
